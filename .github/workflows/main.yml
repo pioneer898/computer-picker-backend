@@ -1,0 +1,23 @@
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+name: computer-picker-backend-build
+run-name: computer-picker-backend is building
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: tsc
+      - uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
