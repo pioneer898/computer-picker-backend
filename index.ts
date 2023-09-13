@@ -4,6 +4,7 @@ const app: Express = express();
 const session = require('express-session');
 const http = require('http');
 const server = http.createServer(app);
+const path = require('path');
 
 const cors = require('cors');
 import { ApiCollection } from './custom_modules/api/ApiCollection';
@@ -27,8 +28,7 @@ app.use(session({
 }));
 
 // Static App
-// app.use(express.static('/usr/app/dist/'));
-// app.use('/images',express.static('images'));
+app.use('/',express.static(path.join(__dirname, './angular-dist/')));
 
 // API Definitions
 import { ConfigurationApi } from './custom_modules/ConfigurationApi';
@@ -52,6 +52,11 @@ collection.addApi(new ImageApi({
 
 // Init API Handler
 collection.run(app);
+
+// Pass routes through for Angular Routing
+app.get('*', function(req, res, next) {
+  res.sendFile(path.join(__dirname, './angular-dist/index.html'));
+});
 
 // Start Server
 const port = (clientConfig.environment == 'production')?80:88;
